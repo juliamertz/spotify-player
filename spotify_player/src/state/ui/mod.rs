@@ -87,7 +87,6 @@ impl UIState {
                 #[cfg(feature = "fzf")]
                 return fuzzy_search_items(items, &query);
 
-                #[cfg(not(feature = "fzf"))]
                 items
                     .iter()
                     .filter(|t| {
@@ -105,10 +104,10 @@ impl UIState {
     }
 }
 
-// #[cfg(feature = "fzf")]
+#[cfg(feature = "fzf")]
 use fuzzy_matcher::skim::SkimMatcherV2;
 
-// #[cfg(feature = "fzf")]
+#[cfg(feature = "fzf")]
 fn fuzzy_search_items<'a, T: std::fmt::Display>(items: &'a [T], query: &str) -> Vec<&'a T> {
     let matcher = SkimMatcherV2::default();
     let mut result = items
