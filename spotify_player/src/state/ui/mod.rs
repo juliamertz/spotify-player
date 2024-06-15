@@ -7,9 +7,6 @@ mod popup;
 
 use super::*;
 
-#[cfg(feature = "fzf")]
-use fuzzy_matcher::skim::SkimMatcherV2;
-
 pub use page::*;
 pub use popup::*;
 
@@ -86,9 +83,11 @@ impl UIState {
         match self.popup {
             Some(PopupState::Search { ref query }) => {
                 let query = query.to_lowercase();
-                #[cfg(feature = "fzf")]
-                let matcher = SkimMatcherV2::default();
 
+                #[cfg(feature = "fzf")]
+                return fuzzy_search_items(items, &query);
+
+                #[cfg(not(feature = "fzf"))]
                 items
                     .iter()
                     .filter(|t| {
@@ -96,11 +95,7 @@ impl UIState {
                             true
                         } else {
                             let t = t.to_string().to_lowercase();
-                            #[cfg(feature = "fzf")]
-                            let m = matcher.fuzzy(&t, &query, false).is_some();
-                            #[cfg(not(feature = "fzf"))]
-                            let m = query.split(' ').any(|q| !q.is_empty() && t.contains(q));
-                            m
+                            query.split(' ').any(|q| !q.is_empty() && t.contains(q))
                         }
                     })
                     .collect::<Vec<_>>()
@@ -108,6 +103,27 @@ impl UIState {
             _ => items.iter().collect::<Vec<_>>(),
         }
     }
+}
+
+// #[cfg(feature = "fzf")]
+use fuzzy_matcher::skim::SkimMatcherV2;
+
+// #[cfg(feature = "fzf")]
+fn fuzzy_search_items<'a, T: std::fmt::Display>(items: &'a [T], query: &str) -> Vec<&'a T> {
+    let matcher = SkimMatcherV2::default();
+    let mut result = items
+        .iter()
+        .filter_map(|t| {
+            matcher
+                .fuzzy(&t.to_string(), &query, false)
+                .map(|(score, _)| (t, score))
+        })
+        .collect::<Vec<_>>();
+
+    result.sort_by(|(_, a), (_, b)| b.cmp(a));
+    let result = result.into_iter().map(|(t, _)| t).collect::<Vec<_>>();
+
+    return result;
 }
 
 impl Default for UIState {
