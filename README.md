@@ -14,7 +14,7 @@
   - [Notify](#notify)
   - [Mouse support](#mouse-support)
   - [Daemon](#daemon)
-  - [Fuzzy search](#fzf)
+  - [Fuzzy search](#fuzzy-search)
   - [CLI commands](#cli-commands)
 - [Commands](#commands)
 - [Configurations](#configurations)

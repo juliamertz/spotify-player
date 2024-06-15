@@ -87,6 +87,7 @@ impl UIState {
                 #[cfg(feature = "fzf")]
                 return fuzzy_search_items(items, &query);
 
+                #[cfg(not(feature = "fzf"))]
                 items
                     .iter()
                     .filter(|t| {
