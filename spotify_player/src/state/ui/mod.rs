@@ -7,6 +7,9 @@ mod popup;
 
 use super::*;
 
+#[cfg(feature = "fzf")]
+use fuzzy_matcher::skim::SkimMatcherV2;
+
 pub use page::*;
 pub use popup::*;
 
@@ -83,6 +86,9 @@ impl UIState {
         match self.popup {
             Some(PopupState::Search { ref query }) => {
                 let query = query.to_lowercase();
+                #[cfg(feature = "fzf")]
+                let matcher = SkimMatcherV2::default();
+
                 items
                     .iter()
                     .filter(|t| {
@@ -90,7 +96,11 @@ impl UIState {
                             true
                         } else {
                             let t = t.to_string().to_lowercase();
-                            query.split(' ').any(|q| !q.is_empty() && t.contains(q))
+                            #[cfg(feature = "fzf")]
+                            let m = matcher.fuzzy(&t, &query, false).is_some();
+                            #[cfg(not(feature = "fzf"))]
+                            let m = query.split(' ').any(|q| !q.is_empty() && t.contains(q));
+                            m
                         }
                     })
                     .collect::<Vec<_>>()
