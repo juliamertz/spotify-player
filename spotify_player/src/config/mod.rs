@@ -108,6 +108,8 @@ pub struct AppConfig {
     pub notify_streaming_only: bool,
 
     pub seek_duration_secs: u16,
+
+    pub modal_search: bool,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -295,6 +297,8 @@ impl Default for AppConfig {
             notify_streaming_only: false,
 
             seek_duration_secs: 5,
+
+            modal_search: false,
         }
     }
 }

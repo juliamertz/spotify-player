@@ -1,4 +1,7 @@
-use crate::{state::model::*, ui::single_line_input::LineInput};
+use crate::{
+    state::{model::*, InputMode},
+    ui::single_line_input::LineInput,
+};
 use tui::widgets::{ListState, TableState};
 
 #[derive(Clone, Debug)]
@@ -15,6 +18,7 @@ pub enum PageState {
         line_input: LineInput,
         current_query: String,
         state: SearchPageUIState,
+        mode: Option<InputMode>,
     },
     #[cfg(feature = "lyric-finder")]
     Lyric {

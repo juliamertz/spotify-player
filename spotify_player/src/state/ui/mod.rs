@@ -49,7 +49,11 @@ impl UIState {
     pub fn new_search_popup(&mut self) {
         self.current_page_mut().select(0);
         self.popup = Some(PopupState::Search {
-            query: "".to_owned(),
+            query: String::new(),
+            mode: match config::get_config().app_config.modal_search {
+                true => Some(InputMode::Insert),
+                false => None,
+            },
         });
     }
 
@@ -82,7 +86,7 @@ impl UIState {
     /// Get a list of items possibly filtered by a search query if exists a search popup
     pub fn search_filtered_items<'a, T: std::fmt::Display>(&self, items: &'a [T]) -> Vec<&'a T> {
         match self.popup {
-            Some(PopupState::Search { ref query }) => {
+            Some(PopupState::Search { ref query, .. }) => {
                 let query = query.to_lowercase();
 
                 #[cfg(feature = "fzf")]

@@ -56,14 +56,22 @@ pub fn render_popup(
                 );
                 (chunks[0], true)
             }
-            PopupState::Search { query } => {
+            PopupState::Search { query, mode } => {
                 let chunks =
                     Layout::vertical([Constraint::Fill(0), Constraint::Length(3)]).split(rect);
 
                 let rect =
                     construct_and_render_block("Search", &ui.theme, Borders::ALL, frame, chunks[1]);
 
-                frame.render_widget(Paragraph::new(format!("/{query}")), rect);
+                // make up some better solution for showing current mode later
+                match mode {
+                    Some(InputMode::Insert) | None => {
+                        frame.render_widget(Paragraph::new(format!("/{query}")), rect)
+                    }
+                    Some(InputMode::Normal) => {
+                        frame.render_widget(Paragraph::new(query.to_string()), rect)
+                    }
+                }
                 (chunks[0], true)
             }
             PopupState::ActionList(item, _) => {
