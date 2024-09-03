@@ -20,3 +20,7 @@ NOTES*
 
 # Generated html files for live previewing markdown
 *.html
+
+# Nix stuff
+.direnv
+result
