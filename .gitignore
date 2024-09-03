@@ -22,3 +22,6 @@ NOTES*
 *.html
 
 .idea
+
+# Nix stuff
+result
