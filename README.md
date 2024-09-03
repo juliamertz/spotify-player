@@ -140,6 +140,57 @@ docker run --rm \
 -it aome510/spotify_player:latest
 ```
 
+### Nix
+
+To run the application without installing, you can run:
+```sh
+nix run "github:aome510/spotify-player?dir=nix"
+```
+
+To install the application on your nixos/nix-darwin system
+
+<details>
+  <summary>Example configuration</summary>
+
+```nix
+# flake.nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    spotify-player.url = "github:aome510/spotify-player?dir=nix";
+  };
+
+  outputs = { self, ... }@inputs: {
+    nixosConfigurations = {
+      mysystem = inputs.nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [{
+          environment.systemPackages =
+            [ inputs.spotify-player.packages."x86_64-linux".default ];
+        }];
+      };
+    };
+  };
+}
+```
+
+Overriding build features
+```nix
+# configuration.nix
+{ inputs, pkgs, ... }:
+let
+  package = inputs.spotify-player.packages.${pkgs.system}.default;
+  spotify-player = package.overrideAttrs (_: {
+    buildNoDefaultFeatures = true;
+    cargoBuildFeatures =
+      [ "daemon" "image" "alsa-backend" "fzf" "streaming" "media-control" ];
+  });
+in { environment.systemPackages = [ spotify-player ]; }
+```
+
+</details>
+
+
 ## Features
 
 ### Spotify Connect
