@@ -47,6 +47,7 @@ pub fn render_search_page(
             state,
             current_query,
             line_input,
+            ..
         } => (state.focus, current_query, line_input),
         _ => return,
     };

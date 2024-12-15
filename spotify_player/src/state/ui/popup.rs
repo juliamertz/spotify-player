@@ -1,6 +1,7 @@
 use crate::{
     command,
     state::model::{Album, Artist, Episode, EpisodeId, Playlist, Show, Track, TrackId},
+    state::UIState,
     ui::single_line_input::LineInput,
 };
 use tui::widgets::ListState;
@@ -11,10 +12,43 @@ pub enum PlaylistCreateCurrentField {
     Desc,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum InputMode {
+    Normal,
+    Insert,
+}
+
+impl InputMode {
+    pub fn set_popup_search_mode(ui: &mut UIState, mode: InputMode) {
+        if let Some(PopupState::Search {
+            mode: ref mut mode_ref,
+            ..
+        }) = ui.popup
+        {
+            *mode_ref = Some(mode);
+        }
+    }
+
+    pub fn toggle_popup_search_mode(ui: &mut UIState) {
+        if let Some(PopupState::Search {
+            mode: ref mut mode_ref,
+            ..
+        }) = ui.popup
+        {
+            *mode_ref = match mode_ref {
+                Some(InputMode::Normal) => Some(InputMode::Insert),
+                Some(InputMode::Insert) => Some(InputMode::Normal),
+                None => None,
+            };
+        }
+    }
+}
+
 #[derive(Debug)]
 pub enum PopupState {
     Search {
         query: String,
+        mode: Option<InputMode>,
     },
     UserPlaylistList(PlaylistPopupAction, ListState),
     UserFollowedArtistList(ListState),

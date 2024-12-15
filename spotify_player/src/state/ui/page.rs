@@ -18,6 +18,7 @@ pub enum PageState {
         line_input: LineInput,
         current_query: String,
         state: SearchPageUIState,
+        mode: Option<crate::state::InputMode>,
     },
     Lyrics {
         track_uri: String,
